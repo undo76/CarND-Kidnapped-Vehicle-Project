@@ -38,7 +38,7 @@ class ParticleFilter {
 
   // Constructor
   // @param num_particles Number of particles
-  ParticleFilter(int n = 500) : num_particles(n), is_initialized(false), weights(num_particles) {}
+  ParticleFilter(int n = 1000) : num_particles(n), is_initialized(false), weights(num_particles) {}
 
   // Destructor
   ~ParticleFilter() {}

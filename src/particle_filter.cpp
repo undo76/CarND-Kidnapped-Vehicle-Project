@@ -59,9 +59,14 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
       p.y += (velocity / yaw_rate) *
              (-cos(p.theta + yaw_rate * delta_t) + cos(p.theta));
     }
-    p.x += noise_x;
-    p.x += noise_y;
-    p.theta += yaw_rate * delta_t + noise_theta;
+
+    // I am assuming that the magnitude of the noise is proportional
+    // to delta_t. Empirically, I get better results, I think that it
+    // would be more correct to give the noise of the velocity and the 
+    // yaw_rate instead.
+    p.x += noise_x * delta_t;
+    p.y += noise_y * delta_t;
+    p.theta += yaw_rate * delta_t + noise_theta * delta_t;
   }
 }
 
@@ -88,17 +93,16 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     // predicted <- landmarks in the sensor_range of the current particle
     vector<LandmarkObs> predicted;
     vector<Map::single_landmark_s> landmark_list = map_landmarks.landmark_list;
-    for_each(
-        landmark_list.begin(), landmark_list.end(),
-        [&](Map::single_landmark_s &landmark) {
-          if (dist(p.x, p.y, landmark.x_f, landmark.y_f) < sensor_range) {
-            LandmarkObs landmark_as_obs;
-            landmark_as_obs.id = landmark.id_i;
-            landmark_as_obs.x = landmark.x_f;
-            landmark_as_obs.y = landmark.y_f;
-            predicted.push_back(landmark_as_obs);
-          }
-        });
+    for_each(landmark_list.begin(), landmark_list.end(),
+             [&](Map::single_landmark_s &landmark) {
+               if (dist(p.x, p.y, landmark.x_f, landmark.y_f) < sensor_range) {
+                 LandmarkObs landmark_as_obs;
+                 landmark_as_obs.id = landmark.id_i;
+                 landmark_as_obs.x = landmark.x_f;
+                 landmark_as_obs.y = landmark.y_f;
+                 predicted.push_back(landmark_as_obs);
+               }
+             });
 
     // Convert observations to map coordinates, based in current particle
     // coordinates.
