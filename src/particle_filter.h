@@ -38,7 +38,7 @@ class ParticleFilter {
 
   // Constructor
   // @param num_particles Number of particles
-  ParticleFilter() : num_particles(0), is_initialized(false) {}
+  ParticleFilter(int n = 500) : num_particles(n), is_initialized(false), weights(num_particles) {}
 
   // Destructor
   ~ParticleFilter() {}
@@ -101,7 +101,7 @@ class ParticleFilter {
    * This can be a very useful debugging tool to make sure transformations are
    * correct and assocations correctly connected
    */
-  Particle SetAssociations(Particle particle, std::vector<int> associations,
+  void SetAssociations(Particle &particle, std::vector<int> associations,
                            std::vector<double> sense_x,
                            std::vector<double> sense_y);
 
